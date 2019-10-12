@@ -12,9 +12,7 @@ import java.util.Scanner;
 public class Hanoi {
     private int[][] theTowers;
     private int size;
-    private int towerOneHeight;
-    private int towerTwoHeight;
-    private int towerThreeHeight;
+    private int[] towerHeights;
     
     /**
      * @param args the command line arguments
@@ -36,9 +34,46 @@ public class Hanoi {
         Hanoi hanoi = new Hanoi(number);
         hanoi.runGame();
     }
-    
-    public void runGame(){
+    /**
+     * The constructor. Sets up the game
+     * @param number 
+     */
+    public Hanoi(int number){
+        this.setSize(number);
+        this.towerHeights=new int[3];
+        this.theTowers = new int[3][this.getSize()];
+        for (int x=1;x<3;x++){
+            for(int y=0;y<this.getSize();y++){
+                setNum(x,y,0);
+            }
+        }
+        for(int y=0;y<this.getSize();y++){
+            setNum(0,y,y+1);
+        }
         
+        this.setTowerHeight(0, getSize());
+        this.setTowerHeight(1, 0);
+        this.setTowerHeight(2, 0);
+    }
+    public void runGame(){
+        System.out.println("H for help, M x to y to move the top item from tower x to tower y, x and y are integers");
+        System.out.println("Q to quit");
+        System.out.println("...");
+        printGame();
+        Scanner myScan = new Scanner(System.in);
+        String input = myScan.nextLine();
+        while("q".equals(input.toLowerCase())){
+            if("h".equals(input.toLowerCase())){
+                System.out.println("H for help, M x to y to move the top item from tower x to tower y, x and y are integers");
+                System.out.println("Q to quit");
+                System.out.println("...");
+            } else if (input.toLowerCase().matches("m [1-3] to [1-3]")){
+                System.out.println("E"); //Temporary
+            } else{
+                System.out.println("There seems to be an invalid input, please try again.");
+            }
+            input = myScan.nextLine();
+        }
     }
     /**
      * Check if numbers are in order on the rightmost 'post'.
@@ -55,13 +90,21 @@ public class Hanoi {
         }
         return win;
     }
+    public void printGame(){
+        for(int y=0;y<size;y++){
+            for(int x=0;x<3;x++){
+                System.out.print(this.getNum(x, y));
+            }
+            System.out.println("");
+        }
+    }
     /**
-     * 
+     * Checks if a piece on one of the towers can be moved.
      * @param sourceTower
      * @param sourceHeight
      * @param destination
      * @param destinationHeight
-     * @return 
+     * @return boolean
      */
     public boolean moveAble(int sourceTower, int sourceHeight, int destination, int destinationHeight){
         if(destinationHeight==0){
@@ -69,27 +112,9 @@ public class Hanoi {
         } else if(destinationHeight==size-1){
             return false;
         }
-        return this.getNum(sourceTower, sourceHeight)==this.getNum(destination, destinationHeight);
+        return this.getNum(sourceTower, sourceHeight)<=this.getNum(destination, destinationHeight-1);
     }
-    /**
-     * The constructor. Sets up the game
-     * @param number 
-     */
-    public Hanoi(int number){
-        this.setSize(number);
-        theTowers = new int[3][this.getSize()];
-        for (int x=1;x<3;x++){
-            for(int y=0;y<this.getSize();y++){
-                setNum(x,y,0);
-            }
-        }
-        for(int y=0;y<this.getSize();y++){
-            setNum(0,y,this.getSize()-y);
-        }
-        this.setTowerOneHeight(getSize());
-        this.setTowerTwoHeight(getSize());
-        this.setTowerThreeHeight(getSize());
-    }
+    
     /*******************
      * Getters
      *******************/
@@ -103,39 +128,26 @@ public class Hanoi {
         return theTowers[x][y];
     }
     /**
-     * 
+     * getter for the tower array
      * @return integer array
      */
     public int[][] getTowers(){
         return theTowers;
     }
     /**
-     * 
-     * @return 
+     * getter for size
+     * @return int
      */
     public int getSize(){
         return size;
     }
     /**
-     * 
+     * getter for the height of a tower
+     * @param tower
      * @return 
      */
-    public int getTowerOneHeight() {
-        return towerOneHeight;
-    }
-    /**
-     * 
-     * @return 
-     */
-    public int getTowerTwoHeight() {
-        return towerTwoHeight;
-    }
-    /**
-     * 
-     * @return 
-     */
-    public int getTowerThreeHeight() {
-        return towerThreeHeight;
+    public int getTowerHeight(int tower){
+        return this.towerHeights[tower];
     }
     
     /******************
@@ -158,25 +170,12 @@ public class Hanoi {
         size=number;
     }
     /**
-     * Sets tower height for tower 1
-     * @param towerOneHeight 
+     * Sets a towers current height
+     * @param tower
+     * @param number 
      */
-    public void setTowerOneHeight(int towerOneHeight) {
-        this.towerOneHeight = towerOneHeight;
-    }
-    /**
-     * Sets tower height for tower 2
-     * @param towerTwoHeight 
-     */
-    public void setTowerTwoHeight(int towerTwoHeight) {
-        this.towerTwoHeight = towerTwoHeight;
-    }
-    /**
-     * Sets tower height for tower 3
-     * @param towerThreeHeight 
-     */
-    public void setTowerThreeHeight(int towerThreeHeight) {
-        this.towerThreeHeight = towerThreeHeight;
+    public void setTowerHeight(int tower, int number){
+        towerHeights[tower]=number;
     }
     
 }
