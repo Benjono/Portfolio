@@ -48,7 +48,7 @@ public class Hanoi {
             }
         }
         for(int y=0;y<this.getSize();y++){
-            setNum(0,y,y+1);
+            setNum(0,this.getSize()-y-1,y+1);
         }
         
         this.setTowerHeight(0, getSize());
@@ -62,17 +62,34 @@ public class Hanoi {
         printGame();
         Scanner myScan = new Scanner(System.in);
         String input = myScan.nextLine();
-        while("q".equals(input.toLowerCase())){
+        boolean won = false;
+        while(!"q".equals(input.toLowerCase())&&!won){
             if("h".equals(input.toLowerCase())){
                 System.out.println("H for help, M x to y to move the top item from tower x to tower y, x and y are integers");
                 System.out.println("Q to quit");
                 System.out.println("...");
             } else if (input.toLowerCase().matches("m [1-3] to [1-3]")){
-                System.out.println("E"); //Temporary
+                int firstnum = Integer.parseInt(""+input.charAt(2))-1;
+                int secondnum = Integer.parseInt(""+input.charAt(7))-1;
+                if (moveAble(firstnum,this.getTowerHeight(firstnum),secondnum,this.getTowerHeight(secondnum))){
+                    this.setNum(secondnum, this.getTowerHeight(secondnum),this.getNum(firstnum, this.getTowerHeight(firstnum)-1));
+                    this.setNum(firstnum, this.getTowerHeight(firstnum)-1, 0);
+                    this.setTowerHeight(secondnum, this.getTowerHeight(secondnum)+1);
+                    this.setTowerHeight(firstnum, this.getTowerHeight(firstnum)-1);
+                    if(checkWin()){
+                        won=true;
+                    }
+                }
+                printGame();
             } else{
                 System.out.println("There seems to be an invalid input, please try again.");
             }
-            input = myScan.nextLine();
+            if(!won){
+                input = myScan.nextLine();
+            }
+        }
+        if(won){
+            System.out.println("Well done! You won.");
         }
     }
     /**
@@ -91,7 +108,7 @@ public class Hanoi {
         return win;
     }
     public void printGame(){
-        for(int y=0;y<size;y++){
+        for(int y=size-1;y>=0;y--){
             for(int x=0;x<3;x++){
                 System.out.print(this.getNum(x, y));
             }
@@ -109,10 +126,10 @@ public class Hanoi {
     public boolean moveAble(int sourceTower, int sourceHeight, int destination, int destinationHeight){
         if(destinationHeight==0){
             return true;
-        } else if(destinationHeight==size-1){
+        } else if (sourceHeight==0){
             return false;
         }
-        return this.getNum(sourceTower, sourceHeight)<=this.getNum(destination, destinationHeight-1);
+        return this.getNum(sourceTower, sourceHeight-1)<this.getNum(destination, destinationHeight-1);
     }
     
     /*******************
